@@ -51,8 +51,8 @@ func (app *aplicaction) mount() http.Handler {
 	// http.ListenAndServe(":3333", r)
 	productsService := products.NewService(repo.New(app.db))
 	productHandler := products.NewHandler(productsService)
-	r.Get("/products", productHandler.ListProducts)
-
+	r.Get("/Products", productHandler.ListProducts)
+	r.Get("/Products/", productHandler.ProductWhitID)
 	ordersService := orders.NewService(repo.New(app.db), app.db)
 	ordersHandler := orders.NewHandler(ordersService)
 	r.Post("/orders", ordersHandler.PlaceOrder)

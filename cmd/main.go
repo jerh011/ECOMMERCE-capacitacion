@@ -1,7 +1,7 @@
 package main
 
 import (
-	"EcomerceProject/internmal/env"
+	"EcomerceProject/internal/env"
 	"context"
 	"log/slog"
 	"os"
@@ -16,7 +16,7 @@ func main() {
 		db: dbConfig{
 			dsn: env.GetString(
 				"GOOSE_DBSTRING",
-				"host=localhost port=5433 user=postgres password=postgres dbname=ecom sslmode=disable",
+				"host=localhost port=5432 user=postgres password=postgres dbname=ecom sslmode=disable",
 			),
 		},
 	}
@@ -34,6 +34,7 @@ func main() {
 	logger.Info("connected to database", "dsn", cfg.db.dsn)
 	api := aplicaction{
 		config: cfg,
+		db:     conn,
 	}
 
 	if err := api.run(api.mount()); err != nil {

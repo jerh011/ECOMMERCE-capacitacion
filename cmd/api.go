@@ -1,17 +1,21 @@
 package main
 
 import (
-	"EcomerceProject/internmal/products"
+	repo "EcomerceProject/internal/adapters/postgresql/sqlc"
+	"EcomerceProject/internal/orders"
+	"EcomerceProject/internal/products"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/jackc/pgx/v5"
 )
 
 type aplicaction struct {
 	config config
+	db     *pgx.Conn
 }
 type config struct {
 	addr string
@@ -45,8 +49,12 @@ func (app *aplicaction) mount() http.Handler {
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("bye")) })
 	// http.ListenAndServe(":3333", r)
-	productsService:= products.NewService()
+	productsService := products.NewService(repo.New(app.db))
 	productHandler := products.NewHandler(productsService)
 	r.Get("/products", productHandler.ListProducts)
+
+	ordersService := orders.NewService(repo.New(app.db), app.db)
+	ordersHandler := orders.NewHandler(ordersService)
+	r.Post("/orders", ordersHandler.PlaceOrder)
 	return r
 }
